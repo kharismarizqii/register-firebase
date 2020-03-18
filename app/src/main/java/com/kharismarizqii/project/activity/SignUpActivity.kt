@@ -42,7 +42,6 @@ class SignUpActivity : AppCompatActivity() {
         val username = et_username.text.toString().trim()
         val email = et_email_et.text.toString().trim()
         val password = et_password.text.toString()
-        var isAlreadyExist = false
         if (name.isEmpty()){
             et_name.error = "Nama harus diisi"
             return
@@ -66,22 +65,18 @@ class SignUpActivity : AppCompatActivity() {
                 for (document in result) {
                     Log.d(TAG, "addOnSuccessListener ${document.data["username"]}")
                     if (document.data["username"] == username) {
-                        isAlreadyExist = true
                         Log.d(TAG, "addOnSuccessListener ${document.data["username"]}")
-                        if (isAlreadyExist) {
-                            et_username.error = "Username already exist"
-                            Toast.makeText(this, "Username already exist", Toast.LENGTH_SHORT)
-                                .show()
-                            loadProgressBar.visibility = View.GONE
-                            btn_signup.visibility = View.VISIBLE
-                            return@addOnSuccessListener
-                        }
-                        register(email, password, name, username)
+                        et_username.error = "Username already exist"
+                        Toast.makeText(this, "Username already exist", Toast.LENGTH_SHORT)
+                            .show()
+                        loadProgressBar.visibility = View.GONE
+                        btn_signup.visibility = View.VISIBLE
+                        return@addOnSuccessListener
                     }
                 }
+                register(email, password, name, username)
             }
             .addOnFailureListener {e ->
-                isAlreadyExist = false
                 btn_signup.visibility = View.VISIBLE
                 loadProgressBar.visibility = View.GONE
                 Toast.makeText(this, e.message, Toast.LENGTH_SHORT ).show()
@@ -103,10 +98,8 @@ class SignUpActivity : AppCompatActivity() {
                         "username" to username,
                         "email" to email
                     )
-
                     db.collection("users")
                         .add(userdata)
-
                     loadProgressBar.visibility = View.GONE
                     val intent =
                         Intent(this@SignUpActivity, MainActivity::class.java)
